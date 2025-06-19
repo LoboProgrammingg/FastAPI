@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import FastAPI
 
-from .schemas import Message, UserDB, UserPublic, UserSchema, UserList
+from .schemas import Message, UserDB, UserList, UserPublic, UserSchema
 
 app = FastAPI()
 
@@ -29,3 +29,5 @@ def create_user(user: UserSchema):
 @app.get('/users/', response_model=UserList)
 def read_users():
     return {'users': database}
+
+
