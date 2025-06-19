@@ -1,15 +1,5 @@
 from http import HTTPStatus
 
-import pytest
-from fastapi.testclient import TestClient
-
-from src.learning_fastapi.app import app
-
-
-@pytest.fixture
-def client():
-    return TestClient(app)
-
 
 def test_read_root_deve_retornar_ok_e_ola_mundo(client):
     response = client.get('/')
