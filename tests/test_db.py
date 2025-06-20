@@ -1,11 +1,18 @@
+from sqlalchemy import select
+
 from src.learning_fastapi.models import User
 
 
-def test_create_user():
+def test_create_user(session):
     user = User(
-        username='matheusloboo',
-        email='matheus@lobo.com',
+        username='test',
+        email='test@lobo.com',
         password='sarutobi12',
     )
 
-    assert user.username == 'matheusloboo'
+    session.add(user)
+    session.commit()
+
+    result = session.scalar(select(User).where(User.email == 'test@lobo.com'))
+
+    assert result.id == 1
