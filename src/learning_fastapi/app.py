@@ -1,10 +1,9 @@
 from http import HTTPStatus
 
-from fastapi import FastAPI, HTTPException
-from sqlalchemy import select, or_
-from .database import get_session
-from sqlalchemy.orm import Session
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import or_, select
 
+from .database import get_session
 from .models import User
 from .schemas import Message, UserDB, UserList, UserPublic, UserSchema
 
@@ -12,17 +11,17 @@ app = FastAPI()
 
 database = []
 
+
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
 def read_root():
     return {'message': 'Hello, World'}
 
 
 @app.post('/users/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-def create_user(user: UserSchema):
-    session = get_session()
+def create_user(user: UserSchema, session=Depends(get_session)):
     db_user = session.scalar(
         select(User).where(
-        or_(User.username == user.username, User.email == user.email)
+            or_(User.username == user.username, User.email == user.email)
         )
     )
 
@@ -49,12 +48,12 @@ def create_user(user: UserSchema):
 
 
 @app.get('/users/', response_model=UserList)
-def read_users():
+def read_users(session=Depends(get_session)):
     return {'users': database}
 
 
 @app.put('/users/{user_id}', response_model=UserPublic)
-def update_user(user_id: int, user: UserSchema):
+def update_user(user_id: int, user: UserSchema, session=Depends(get_session)):
     if user_id < 1 or user_id > len(database) + 1:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
@@ -67,7 +66,7 @@ def update_user(user_id: int, user: UserSchema):
 
 
 @app.delete('/users/{user_id}', response_model=Message)
-def delete_user(user_id: int):
+def delete_user(user_id: int, session=Depends(get_session)):
     if user_id < 1 or user_id > len(database):
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='User not found'
