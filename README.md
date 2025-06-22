@@ -114,7 +114,9 @@ learning-fastapi/
 │       ├── __init__.py
 │       ├── app.py
 │       ├── models.py
-│       └── schemas.py
+│       ├── schemas.py
+│       ├── database.py
+│       └── settings.py
 ├── tests/
 │   ├── __init.py__
 │   ├── test_db.py
